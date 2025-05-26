@@ -61,6 +61,13 @@ class BookManagement {
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
     }
+
+    public function bmsDropTable() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'books_systems';
+        $sql = "DROP TABLE IF EXISTS $table_name;";
+        $wpdb->query($sql);
+    }
 }
 
 
