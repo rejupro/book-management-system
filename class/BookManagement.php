@@ -44,6 +44,23 @@ class BookManagement {
         // Here you can add the code to display the list of books
         echo '<p>' . __('This is where you can view the list of books.', 'bms-system') . '</p>';
     }
+    public function bmsCreateTable() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'books_systems';
+        $charset_collate = $wpdb->get_charset_collate();
+
+        $sql = "CREATE TABLE $table_name (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `name` varchar(255) NOT NULL,
+            `author` varchar(255) NOT NULL,
+            `profile_image` varchar(255) DEFAULT NULL,
+            `book_price` varchar(255) DEFAULT NULL,
+            `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
 }
 
 

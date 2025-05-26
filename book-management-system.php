@@ -29,5 +29,8 @@ define( 'BMS_PLUGIN_BASNAME', plugin_basename( BMS_PLUGIN_FILE ) );
 include_once BMS_PLUGIN_PATH . 'class/BookManagement.php';
 
 $bookManagementObject = new BookManagement();
+
+// Activation hook to run on plugin activation
+register_activation_hook(__FILE__, array($bookManagementObject, 'bmsCreateTable'));
      
 
