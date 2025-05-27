@@ -36,9 +36,11 @@ class BookManagement {
         );
     }
     public function renderAddNewBookPage() {
-        echo '<h1 class="bms-heading">' . __('Add New Book', 'bms-system') . '</h1>';
-        // Here you can add the code to display the form for adding a new book
-        echo '<p>' . __('This is where you can add a new book.', 'bms-system') . '</p>';
+        include_once BMS_PLUGIN_PATH . 'pages/add-book.php';
+        ob_start();
+        $contents = ob_get_contents();
+        ob_end_clean();
+        echo $contents;
     }
     public function renderBookListPage() {
         echo '<h1>' . __('Book List', 'bms-system') . '</h1>';
