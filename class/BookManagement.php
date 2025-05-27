@@ -75,9 +75,12 @@ class BookManagement {
         }
     }
     public function renderBookListPage() {
-        echo '<h1>' . __('Book List', 'bms-system') . '</h1>';
-        // Here you can add the code to display the list of books
-        echo '<p>' . __('This is where you can view the list of books.', 'bms-system') . '</p>';
+        include_once BMS_PLUGIN_PATH .  'pages/book-list.php';
+        ob_start();
+        $contents = ob_get_contents();
+        ob_end_clean();
+        echo $contents;
+        
     }
     public function bmsCreateTable() {
         global $wpdb;
