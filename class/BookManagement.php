@@ -75,6 +75,7 @@ class BookManagement {
     public function enqueueBMSAssets() {
         wp_enqueue_style('bms-style', BMS_PLUGIN_URL . 'assets/css/style.css', array(), BMS_SYSTEM_VERSION);
         wp_enqueue_script('bms-script', BMS_PLUGIN_URL . 'assets/js/script.js', array('jquery'), BMS_SYSTEM_VERSION, true);
+        wp_enqueue_script('bms-validation', BMS_PLUGIN_URL. '/assets/js/jquery.validate.min.js', array('jquery'), BMS_SYSTEM_VERSION, true);
     }
 }
 

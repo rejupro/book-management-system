@@ -11,4 +11,6 @@ jQuery(function ($) {
       window.location.href = $(this).attr("href");
     }
   });
+
+  $("#frm-add-book").validate();
 });
