@@ -39,3 +39,14 @@ jQuery(function ($) {
     });
   });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const response = document.getElementById("save-response");
+  if (response) {
+    setTimeout(function () {
+      response.style.transition = "opacity 1s";
+      response.style.opacity = "0";
+      setTimeout(() => (response.style.display = "none"), 1000);
+    }, 2800);
+  }
+});

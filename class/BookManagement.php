@@ -2,6 +2,7 @@
 
 class BookManagement {
    
+    private $message = '';
 
     public function __construct() {
        add_action("admin_menu", array($this, "addBMSMenus"));
@@ -36,11 +37,42 @@ class BookManagement {
         );
     }
     public function renderAddNewBookPage() {
+        
+        $this->handleBookFormSubmission();
+        $response = $this->message;
         include_once BMS_PLUGIN_PATH . 'pages/add-book.php';
         ob_start();
         $contents = ob_get_contents();
         ob_end_clean();
         echo $contents;
+    }
+    private function handleBookFormSubmission() {
+        if (!isset($_POST['btn_form_submit'])) {
+            return;
+        }
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'books_systems';
+
+        $book_name = sanitize_text_field($_POST['book_name']);
+        $author_name = sanitize_text_field($_POST['author_name']);
+        $book_price = sanitize_text_field($_POST['book_price']);
+        $cover_image = esc_url_raw($_POST['cover_image']);
+
+    
+        $data = array(
+            'name' => $book_name,
+            'author' => $author_name,
+            'profile_image' => $cover_image,
+            'book_price' => $book_price,
+        );
+
+        $inserted = $wpdb->insert($table_name, $data);
+
+        if ($inserted) {
+            $this->message = __('Book added successfully!', 'bms-system');
+        } else {
+            $this->message = __('Failed to add book. Please try again.', 'bms-system');
+        }
     }
     public function renderBookListPage() {
         echo '<h1>' . __('Book List', 'bms-system') . '</h1>';

@@ -11,7 +11,7 @@
       }
    ?>
 
-    <form action="<?php echo admin_url('admin.php?page=books-system'); ?>" id="frm-add-book" method="post">
+    <form action="<?php echo admin_url('admin.php?page=book-management'); ?>" id="frm-add-book" method="post">
 
         <div class="form-input">
 
