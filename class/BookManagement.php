@@ -5,6 +5,7 @@ class BookManagement {
 
     public function __construct() {
        add_action("admin_menu", array($this, "addBMSMenus"));
+       add_action("admin_enqueue_scripts", array($this, "enqueueBMSAssets"));
     }
 
     public function addBMSMenus() {
@@ -35,7 +36,7 @@ class BookManagement {
         );
     }
     public function renderAddNewBookPage() {
-        echo '<h1>' . __('Add New Book', 'bms-system') . '</h1>';
+        echo '<h1 class="bms-heading">' . __('Add New Book', 'bms-system') . '</h1>';
         // Here you can add the code to display the form for adding a new book
         echo '<p>' . __('This is where you can add a new book.', 'bms-system') . '</p>';
     }
@@ -67,6 +68,11 @@ class BookManagement {
         $table_name = $wpdb->prefix . 'books_systems';
         $sql = "DROP TABLE IF EXISTS $table_name;";
         $wpdb->query($sql);
+    }
+
+    public function enqueueBMSAssets() {
+        wp_enqueue_style('bms-style', BMS_PLUGIN_URL . 'assets/css/style.css', array(), BMS_SYSTEM_VERSION);
+        wp_enqueue_script('bms-script', BMS_PLUGIN_URL . 'assets/js/script.js', array('jquery'), BMS_SYSTEM_VERSION, true);
     }
 }
 
