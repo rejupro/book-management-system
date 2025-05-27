@@ -7,11 +7,16 @@
     class BookListTable extends WP_List_Table {
 
         public function prepare_items() {
-            $this->_column_headers = array($this->get_columns());
+            $this->_column_headers = array($this->get_columns(), [], $this->get_sortable_columns());
             
+            $orderby = isset($_GET['orderby']) ? sanitize_text_field($_GET['orderby']) : 'id';
+            $order = isset($_GET['order']) ? sanitize_text_field($_GET['order']) : 'ASC';
+
+
             $per_page = 2;
             $current_page = $this->get_pagenum();
             $offset = ($current_page - 1) * $per_page;
+
 
 
             global $wpdb;
@@ -21,7 +26,10 @@
             $total_books = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
             $total_books = count($total_books);
             $books = $wpdb->get_results(
-                    "SELECT * FROM $table_name LIMIT {$offset}, {$per_page}", ARRAY_A
+                    "SELECT * FROM $table_name 
+                    ORDER BY {$orderby} {$order}  
+                    LIMIT {$offset}, {$per_page}", 
+                    ARRAY_A
             );
             $this->items = $books;
             
@@ -52,5 +60,13 @@
 
         public function column_default($item, $column_name) {
             return isset($item[$column_name]) ? $item[$column_name] : '';
+        }
+
+        public function get_sortable_columns() {
+            $columns = [
+                'id' => ['id', true],
+                'name' => ['name', true],
+            ];
+            return $columns;
         }
     }
