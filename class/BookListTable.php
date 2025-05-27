@@ -8,13 +8,29 @@
 
         public function prepare_items() {
             $this->_column_headers = array($this->get_columns());
+            
+            $per_page = 2;
+            $current_page = $this->get_pagenum();
+            $offset = ($current_page - 1) * $per_page;
+
 
             global $wpdb;
+
             $table_name = $wpdb->prefix . 'books_systems';
-            $query = "SELECT * FROM $table_name";
-            $books = $wpdb->get_results($query, ARRAY_A);
+
+            $total_books = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+            $total_books = count($total_books);
+            $books = $wpdb->get_results(
+                    "SELECT * FROM $table_name LIMIT {$offset}, {$per_page}", ARRAY_A
+            );
             $this->items = $books;
-        
+            
+            $this->set_pagination_args( array(
+                'total_items' => $total_books,
+                'per_page'    => $per_page,
+                'total_pages' => ceil( $total_books / $per_page ),
+            ) );
+
         }
 
 

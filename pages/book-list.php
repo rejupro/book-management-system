@@ -4,9 +4,13 @@
         include_once BMS_PLUGIN_PATH . 'class/BookListTable.php';
     }
 
+    ?>
+    <div class="wrap">
+        <h1><?php echo __('Book List', 'bms-system'); ?></h1>
+        <?php
+        $bookListTable = new BookListTable();
+        $bookListTable->prepare_items();
+        $bookListTable->display();
 
-    echo "<h1>Book List</h1>";
-
-    $bookListTable = new BookListTable();
-    $bookListTable->prepare_items();
-    $bookListTable->display();
+        ?>
+    </div>    
