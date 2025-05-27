@@ -13,4 +13,29 @@ jQuery(function ($) {
   });
 
   $("#frm-add-book").validate();
+
+  let mediaUploader;
+
+  $("#btn-upload-cover").on("click", function (e) {
+    e.preventDefault();
+
+    mediaUploader = wp.media({
+      title: "Select or Upload a Book Cover",
+      button: {
+        text: "Use this cover",
+      },
+      multiple: false,
+    });
+    mediaUploader.open();
+
+    mediaUploader.on("select", function () {
+      const attachment = mediaUploader
+        .state()
+        .get("selection")
+        .first()
+        .toJSON();
+      $("#cover_image").val(attachment.url);
+      $("#cover-preview").attr("src", attachment.url).show();
+    });
+  });
 });
