@@ -8,6 +8,13 @@
 
         public function prepare_items() {
             $this->_column_headers = array($this->get_columns());
+
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'books_systems';
+            $query = "SELECT * FROM $table_name";
+            $books = $wpdb->get_results($query, ARRAY_A);
+            $this->items = $books;
+        
         }
 
 
@@ -25,5 +32,9 @@
 
         public function no_items() {
             echo __('No books found.', 'bms-system');
+        }
+
+        public function column_default($item, $column_name) {
+            return isset($item[$column_name]) ? $item[$column_name] : '';
         }
     }
