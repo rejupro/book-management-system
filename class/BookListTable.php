@@ -154,8 +154,19 @@
         private function process_row_action($action_type) {
             global $wpdb;
             $table_name = $wpdb->prefix . 'books_systems';
-            $bookId = isset($_GET['book_id']) ? intval($_GET['book_id']) : "";
-            if(!empty($bookId)){
+            $bookId = isset($_GET['book_id']) ? $_GET['book_id'] : "";
+
+            if(is_array($bookId)){
+                foreach($bookId as $id){
+                    $wpdb->update(
+                        $table_name,
+                        ['is_trash' => 1],
+                        ['id' => $id],
+                        ['%s'],
+                        ['%d']
+                    );
+                }
+            }else{
                 $wpdb->update(
                     $table_name,
                     ['is_trash' => 1],
@@ -163,12 +174,12 @@
                     ['%s'],
                     ['%d']
                 );
-                ?>
-                    <script>
-                        window.location.href = "<?php echo admin_url('admin.php?page=book-list'); ?>";
-                    </script>
-                <?php
-
+                
             }
+            ?>
+                <script>
+                    window.location.href = "<?php echo admin_url('admin.php?page=book-list'); ?>";
+                </script>
+            <?php
         }
     }
