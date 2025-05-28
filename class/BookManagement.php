@@ -80,7 +80,7 @@ class BookManagement {
         $contents = ob_get_contents();
         ob_end_clean();
         echo $contents;
-        
+
     }
     public function bmsCreateTable() {
         global $wpdb;
@@ -93,6 +93,7 @@ class BookManagement {
             `author` varchar(255) NOT NULL,
             `profile_image` varchar(255) DEFAULT NULL,
             `book_price` varchar(255) DEFAULT NULL,
+            `is_trash` INT NOT NULL DEFAULT '0',
             `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";

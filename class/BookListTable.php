@@ -19,6 +19,11 @@
 
             $search = isset($_GET['s']) ? $_GET['s'] : false;
 
+            $row_action = $this->current_action();
+            if(!empty($row_action) && $row_action === 'trash'){
+                $this->process_row_action($row_action);
+            }
+
             global $wpdb;
 
             $table_name = $wpdb->prefix . 'books_systems';
@@ -121,15 +126,49 @@
             return $actions;
         }
 
-        public function handle_row_actions($item, $column_name, $primary) {
+        // public function handle_row_actions($item, $column_name, $primary) {
+        //     $actions = [];
+        //     if($column_name !== $primary) {
+        //         return "";
+        //     }
+        //     $actions['edit'] = "<a href='#'>Edit</a>";
+        //     $actions['quick_edit'] = "<a href='#'>Quick Edit</a>";
+        //     $actions['trash'] = "<a href='#'>Move to Trash</a>";
+        //     $actions['view'] = "<a href='#'>View</a>";
+        //     return $this->row_actions($actions);
+        // }
+
+        public function column_name($item) {
             $actions = [];
-            if($column_name !== $primary) {
-                return "";
-            }
             $actions['edit'] = "<a href='#'>Edit</a>";
             $actions['quick_edit'] = "<a href='#'>Quick Edit</a>";
-            $actions['trash'] = "<a href='#'>Move to Trash</a>";
+            $actions['trash'] = "<a onclick='return confirm(\"Are you sure to delete\")' href='admin.php?page=book-list&action=trash&book_id=".$item['id']."'>Move to Trash</a>";
             $actions['view'] = "<a href='#'>View</a>";
-            return $this->row_actions($actions);
+            return sprintf(
+                '<strong>%s</strong> %s',
+                esc_html($item['name']),
+                $this->row_actions($actions)
+            );
+        }
+
+        private function process_row_action($action_type) {
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'books_systems';
+            $bookId = isset($_GET['book_id']) ? intval($_GET['book_id']) : "";
+            if(!empty($bookId)){
+                $wpdb->update(
+                    $table_name,
+                    ['is_trash' => 1],
+                    ['id' => $bookId],
+                    ['%s'],
+                    ['%d']
+                );
+                ?>
+                    <script>
+                        window.location.href = "<?php echo admin_url('admin.php?page=book-list'); ?>";
+                    </script>
+                <?php
+
+            }
         }
     }
