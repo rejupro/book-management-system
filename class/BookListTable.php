@@ -120,4 +120,16 @@
             ];
             return $actions;
         }
+
+        public function handle_row_actions($item, $column_name, $primary) {
+            $actions = [];
+            if($column_name !== $primary) {
+                return "";
+            }
+            $actions['edit'] = "<a href='#'>Edit</a>";
+            $actions['quick_edit'] = "<a href='#'>Quick Edit</a>";
+            $actions['trash'] = "<a href='#'>Move to Trash</a>";
+            $actions['view'] = "<a href='#'>View</a>";
+            return $this->row_actions($actions);
+        }
     }
