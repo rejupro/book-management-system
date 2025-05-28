@@ -112,4 +112,12 @@
             }
             return __('No Image', 'bms-system');
         }
+
+        public function get_bulk_actions(){
+            $actions = [
+                'edit' => __('Edit', 'bms-system'),
+                'trash' => __('Move to Trash', 'bms-system'),
+            ];
+            return $actions;
+        }
     }
