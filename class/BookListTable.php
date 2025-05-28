@@ -72,6 +72,7 @@
 
         public function get_columns() {
            $columns = [
+                'cb' => '<input type="checkbox" />', // Checkbox for bulk actions
                 'id' => __('ID', 'bms-system'),
                 'name' => __('Name', 'bms-system'),
                 'author' => __('Author', 'bms-system'),
@@ -96,5 +97,19 @@
                 'name' => ['name', true],
             ];
             return $columns;
+        }
+
+        public function column_cb($item) {
+            return sprintf(
+                '<input type="checkbox" name="book_id[]" value="%d" />',
+                $item['id']
+            );
+        }
+
+        public function column_profile_image($item) {
+            if ( ! empty( $item['profile_image'] ) ) {
+                return '<img src="' . esc_url( $item['profile_image'] ) . '" alt="' . esc_attr( $item['name'] ) . '" style="width: 80px; height: auto;">';
+            }
+            return __('No Image', 'bms-system');
         }
     }
