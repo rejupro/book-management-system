@@ -17,22 +17,50 @@
             $current_page = $this->get_pagenum();
             $offset = ($current_page - 1) * $per_page;
 
-
+            $search = isset($_GET['s']) ? $_GET['s'] : false;
 
             global $wpdb;
 
             $table_name = $wpdb->prefix . 'books_systems';
 
-            $total_books = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
-            $total_books = count($total_books);
-            $books = $wpdb->get_results(
-                    "SELECT * FROM $table_name 
-                    ORDER BY {$orderby} {$order}  
-                    LIMIT {$offset}, {$per_page}", 
+           if($search){
+                $total_books = $wpdb->get_results(
+                    $wpdb->prepare(
+                        "SELECT * FROM $table_name WHERE name LIKE %s OR author LIKE %s",
+                        '%' . $wpdb->esc_like($search) . '%',
+                        '%' . $wpdb->esc_like($search) . '%'
+                    ),
                     ARRAY_A
-            );
-            $this->items = $books;
-            
+                );
+                $total_books = count($total_books);
+
+                $books = $wpdb->get_results(
+                    $wpdb->prepare(
+                        "SELECT * FROM $table_name WHERE name LIKE %s OR author LIKE %s 
+                        ORDER BY {$orderby} {$order}  
+                        LIMIT %d, %d",
+                        '%' . $wpdb->esc_like($search) . '%',
+                        '%' . $wpdb->esc_like($search) . '%',
+                        $offset,
+                        $per_page
+                    ),
+                    ARRAY_A
+                );
+                
+           }else{
+                $total_books = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+                $total_books = count($total_books);
+                $books = $wpdb->get_results(
+                        "SELECT * FROM $table_name 
+                        ORDER BY {$orderby} {$order}  
+                        LIMIT {$offset}, {$per_page}", 
+                        ARRAY_A
+                );
+                
+           }
+
+           $this->items = $books;
+
             $this->set_pagination_args( array(
                 'total_items' => $total_books,
                 'per_page'    => $per_page,
