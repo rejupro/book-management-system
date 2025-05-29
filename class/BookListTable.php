@@ -5,7 +5,7 @@
     }
 
     class BookListTable extends WP_List_Table {
-
+        
         public function prepare_items() {
             $this->_column_headers = array($this->get_columns(), [], $this->get_sortable_columns());
             
@@ -185,10 +185,12 @@
 
         public function extra_tablenav($position){
             if($position === 'top'){
+                global $wpdb;
+                $table_name = $wpdb->prefix . 'books_systems';
                $status_link = array(
-                'all' => 10,
-                'published' => 20,
-                'trash' => 30,
+                'all' => count($wpdb->get_results("SELECT * FROM $table_name", ARRAY_A)),
+                'published' => count($wpdb->get_results("SELECT * FROM $table_name WHERE is_trash = 0 ", ARRAY_A)),
+                'trash' => count($wpdb->get_results("SELECT * FROM $table_name WHERE is_trash = 1", ARRAY_A)),
                );
 
                $className = "";
