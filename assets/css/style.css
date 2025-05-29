@@ -66,3 +66,7 @@
   border-radius: 5px;
   color: #fff;
 }
+
+.tablenav .status-links {
+  display: none;
+}

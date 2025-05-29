@@ -182,4 +182,31 @@
                 </script>
             <?php
         }
+
+        public function extra_tablenav($position){
+            if($position === 'top'){
+               $status_link = array(
+                'all' => 10,
+                'published' => 20,
+                'trash' => 30,
+               );
+
+               $className = "";
+            //    $current_action = $this->current_action();
+                $current_action = isset($_GET['status']) ? sanitize_text_field($_GET['status']) : "";
+
+                echo '<div class="alignleft actions">';
+                echo '<ul class="subsubsub status-links">';
+                foreach($status_link as $status => $count){
+                    if($current_action === 'show_' . $status){
+                        $className = 'current';
+                    } else {
+                        $className = 'something wrong';
+                    }
+                    echo '<li><a href="' . admin_url('admin.php?page=book-list&status=show_' . $status) . '" class="' . $className . '">' . ucfirst($status) . ' <span class="count">(' . $count . ')</span></a> | </li>';
+                }
+                echo '</ul>';
+                echo '</div>';
+            }
+        }
     }

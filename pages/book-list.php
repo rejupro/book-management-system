@@ -7,10 +7,15 @@
     ?>
     <div class="wrap">
         <h1><?php echo __('Book List', 'bms-system'); ?></h1>
-        <form id="frm_search" method="get">
-            <input type="hidden" name="page" value="book-list">
         <?php
             $bookListTable = new BookListTable();
+        ?>
+        <form id="frm_search" method="get">
+            <?php
+                $bookListTable->extra_tablenav('top');
+            ?>
+            <input type="hidden" name="page" value="book-list">
+        <?php
             $bookListTable->prepare_items();
             $bookListTable->search_box(__('Search Books', 'bms-system'), 'search_books');
             $bookListTable->display();
