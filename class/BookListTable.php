@@ -20,6 +20,7 @@
             $search = isset($_GET['s']) ? $_GET['s'] : false;
 
             $row_action = $this->current_action();
+            
 
             $current_action = isset($_GET['status']) ? sanitize_text_field($_GET['status']) : "";
             if($current_action === 'show_all'){
@@ -28,8 +29,6 @@
                 $row_action = 'published';
             } elseif($current_action === 'show_trash'){
                 $row_action = 'trashpage';
-            } else {
-                $row_action = '';
             }
             if ($row_action ==='published') {
                 $condition = "WHERE is_trash = 0";    
@@ -38,8 +37,9 @@
             } else {
                 $condition = '';
             }
+            
 
-            if(!empty($row_action) && $row_action === 'trash'){
+            if(!empty($row_action)){
                 $this->process_row_action($row_action);
             }
 
@@ -140,10 +140,18 @@
         }
 
         public function get_bulk_actions(){
-            $actions = [
-                'edit' => __('Edit', 'bms-system'),
-                'trash' => __('Move to Trash', 'bms-system'),
-            ];
+            $actions = [];
+            $current_action = isset($_GET['status']) ? sanitize_text_field($_GET['status']) : "";
+            if($current_action === 'show_published'){
+                 $actions = [
+                    'edit' => __('Edit', 'bms-system'),
+                    'trash' => __('Move to Trash', 'bms-system'),
+                ];
+            } elseif($current_action === 'show_trash') {
+                $actions['restore'] = __('Restore', 'bms-system');
+                $actions['delete'] = __('Delete Permanently', 'bms-system');
+            }
+           
             return $actions;
         }
 
@@ -161,10 +169,31 @@
 
         public function column_name($item) {
             $actions = [];
-            $actions['edit'] = "<a href='#'>Edit</a>";
-            $actions['quick_edit'] = "<a href='#'>Quick Edit</a>";
-            $actions['trash'] = "<a onclick='return confirm(\"Are you sure to delete\")' href='admin.php?page=book-list&action=trash&book_id=".$item['id']."'>Move to Trash</a>";
-            $actions['view'] = "<a href='#'>View</a>";
+
+            $current_action = isset($_GET['status']) ? sanitize_text_field($_GET['status']) : "";
+
+            if($current_action === 'show_all'){
+                if($item['is_trash'] == 0){
+                    $actions['edit'] = "<a href='#'>Edit</a>";
+                    $actions['quick_edit'] = "<a href='#'>Quick Edit</a>";
+                    $actions['trash'] = "<a onclick='return confirm(\"Are you sure to delete\")' href='admin.php?page=book-list&action=trash&book_id=".$item['id']."'>Move to Trash</a>";
+                    $actions['view'] = "<a href='#'>View</a>";
+                }elseif($item['is_trash'] == 1){
+                    $actions['restore'] = "<a href='admin.php?page=book-list&action=restore&book_id=".$item['id']."'>Restore</a>";
+                    $actions['delete'] = "<a onclick='return confirm(\"Are you sure to delete permanently\")' href='admin.php?page=book-list&action=delete&book_id=".$item['id']."'>Delete Permanently</a>";
+                }
+
+            }elseif($current_action === 'show_published'){
+                $actions['edit'] = "<a href='#'>Edit</a>";
+                $actions['quick_edit'] = "<a href='#'>Quick Edit</a>";
+                $actions['trash'] = "<a onclick='return confirm(\"Are you sure to delete\")' href='admin.php?page=book-list&action=trash&book_id=".$item['id']."'>Move to Trash</a>";
+                $actions['view'] = "<a href='#'>View</a>";
+            }elseif($current_action === 'show_trash'){
+                $actions['restore'] = "<a href='admin.php?page=book-list&action=restore&book_id=".$item['id']."'>Restore</a>";
+                $actions['delete'] = "<a onclick='return confirm(\"Are you sure to delete permanently\")' href='admin.php?page=book-list&action=delete&book_id=".$item['id']."'>Delete Permanently</a>";
+            }
+
+            
             return sprintf(
                 '<strong>%s</strong> %s',
                 esc_html($item['name']),
@@ -177,31 +206,74 @@
             $table_name = $wpdb->prefix . 'books_systems';
             $bookId = isset($_GET['book_id']) ? $_GET['book_id'] : "";
 
-            if(is_array($bookId)){
-                foreach($bookId as $id){
+            
+            if($action_type === 'trash'){
+                if(is_array($bookId)){
+                    foreach($bookId as $id){
+                        $wpdb->update(
+                            $table_name,
+                            ['is_trash' => 1],
+                            ['id' => $id],
+                            ['%s'],
+                            ['%d']
+                        );
+                    }
+                }else{
                     $wpdb->update(
                         $table_name,
                         ['is_trash' => 1],
-                        ['id' => $id],
+                        ['id' => $bookId],
+                        ['%s'],
+                        ['%d']
+                    );
+                    
+                }
+            }elseif($action_type === 'restore'){
+                if(is_array($bookId)){
+                    foreach($bookId as $id){
+                        $wpdb->update(
+                            $table_name,
+                            ['is_trash' => 0],
+                            ['id' => $id],
+                            ['%s'],
+                            ['%d']
+                        );
+                    }
+                }else{
+                    $wpdb->update(
+                        $table_name,
+                        ['is_trash' => 0],
+                        ['id' => $bookId],
                         ['%s'],
                         ['%d']
                     );
                 }
-            }else{
-                $wpdb->update(
-                    $table_name,
-                    ['is_trash' => 1],
-                    ['id' => $bookId],
-                    ['%s'],
-                    ['%d']
-                );
-                
+            }elseif($action_type === 'delete'){
+                if(is_array($bookId)){
+                    foreach($bookId as $id){
+                        $wpdb->delete(
+                            $table_name,
+                            ['id' => $id],
+                            ['%d']
+                        );
+                    }
+                }else{
+                    $wpdb->delete(
+                        $table_name,
+                        ['id' => $bookId],
+                        ['%d']
+                    );
+                }
             }
-            ?>
+            
+            if($action_type === 'trash' || $action_type === 'restore' || $action_type === 'delete') {
+                // Redirect to the book list page after processing the action
+                ?>
                 <script>
                     window.location.href = "<?php echo admin_url('admin.php?page=book-list'); ?>";
                 </script>
-            <?php
+                <?php
+            } 
         }
 
         public function extra_tablenav($position){
