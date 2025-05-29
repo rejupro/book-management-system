@@ -13,13 +13,32 @@
             $order = isset($_GET['order']) ? sanitize_text_field($_GET['order']) : 'ASC';
 
 
-            $per_page = 2;
+            $per_page = 5;
             $current_page = $this->get_pagenum();
             $offset = ($current_page - 1) * $per_page;
 
             $search = isset($_GET['s']) ? $_GET['s'] : false;
 
             $row_action = $this->current_action();
+
+            $current_action = isset($_GET['status']) ? sanitize_text_field($_GET['status']) : "";
+            if($current_action === 'show_all'){
+                $row_action = 'all';
+            } elseif($current_action === 'show_published'){
+                $row_action = 'published';
+            } elseif($current_action === 'show_trash'){
+                $row_action = 'trashpage';
+            } else {
+                $row_action = '';
+            }
+            if ($row_action ==='published') {
+                $condition = "WHERE is_trash = 0";    
+            }else if ($row_action === 'trashpage') {
+                $condition = "WHERE is_trash = 1";
+            } else {
+                $condition = '';
+            }
+
             if(!empty($row_action) && $row_action === 'trash'){
                 $this->process_row_action($row_action);
             }
@@ -53,13 +72,15 @@
                 );
                 
            }else{
-                $total_books = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+                $total_books = $wpdb->get_results("SELECT * FROM $table_name {$condition}", ARRAY_A);
                 $total_books = count($total_books);
+
                 $books = $wpdb->get_results(
-                        "SELECT * FROM $table_name 
-                        ORDER BY {$orderby} {$order}  
-                        LIMIT {$offset}, {$per_page}", 
-                        ARRAY_A
+                    "SELECT * FROM $table_name 
+                    {$condition} 
+                    ORDER BY {$orderby} {$order}  
+                    LIMIT {$offset}, {$per_page}",
+                    ARRAY_A
                 );
                 
            }
