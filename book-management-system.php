@@ -33,5 +33,8 @@ $bookManagementObject = new BookManagement();
 // Activation hook to run on plugin activation
 register_activation_hook(__FILE__, array($bookManagementObject, 'bmsCreateTable'));
 register_deactivation_hook(__FILE__, array($bookManagementObject, 'bmsDropTable'));
+
+// load ajax method of editing book
+add_action('wp_ajax_bms_updated_book', array($bookManagementObject, 'bmsEditBook'));
      
 

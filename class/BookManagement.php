@@ -113,6 +113,36 @@ class BookManagement {
         wp_enqueue_script('bms-script', BMS_PLUGIN_URL . 'assets/js/script.js', array('jquery'), BMS_SYSTEM_VERSION, true);
         wp_enqueue_media();
         wp_enqueue_script('bms-validation', BMS_PLUGIN_URL. '/assets/js/jquery.validate.min.js', array('jquery'), BMS_SYSTEM_VERSION, true);
+
+        $data = 'var bms_plugin_ajax_url = "' . esc_url(admin_url('admin-ajax.php')) . '";';
+        wp_add_inline_script('bms-script', $data, 'before');
+
+
+    }
+    public function bmsEditBook() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'books_systems';
+
+        $book_id = intval($_POST['book_id']);
+        $book_name = sanitize_text_field($_POST['book_name']);
+        $author_name = sanitize_text_field($_POST['author_name']);
+        $book_price = sanitize_text_field($_POST['book_price']);
+
+        $data = array(
+            'name' => $book_name,
+            'author' => $author_name,
+            'book_price' => $book_price,
+        );
+
+        $where = array('id' => $book_id);
+
+        $updated = $wpdb->update($table_name, $data, $where);
+
+        if ($updated !== false) {
+            wp_send_json_success(__('Book updated successfully!', 'bms-system'));
+        } else {
+            wp_send_json_error(__('Failed to update book. Please try again.', 'bms-system'));
+        }
     }
 }
 

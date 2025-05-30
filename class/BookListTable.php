@@ -114,7 +114,7 @@
         }
 
         public function column_default($item, $column_name) {
-            return isset($item[$column_name]) ? $item[$column_name] : '';
+            return isset($item[$column_name]) ?  "<span class='".$column_name."'>" . $item[$column_name] . "</span>" : '';
         }
 
         public function get_sortable_columns() {
@@ -175,7 +175,7 @@
             if($current_action === 'show_all'){
                 if($item['is_trash'] == 0){
                     $actions['edit'] = "<a href='#'>Edit</a>";
-                    $actions['quick_edit'] = "<a href='#'>Quick Edit</a>";
+                    $actions['quick_edit'] = "<a href='#' class='btn-quick-click'>Quick Edit</a>";
                     $actions['trash'] = "<a onclick='return confirm(\"Are you sure to delete\")' href='admin.php?page=book-list&action=trash&book_id=".$item['id']."'>Move to Trash</a>";
                     $actions['view'] = "<a href='#'>View</a>";
                 }elseif($item['is_trash'] == 1){
@@ -185,7 +185,7 @@
 
             }elseif($current_action === 'show_published'){
                 $actions['edit'] = "<a href='#'>Edit</a>";
-                $actions['quick_edit'] = "<a href='#'>Quick Edit</a>";
+                $actions['quick_edit'] = "<a href='#' class='btn-quick-click'>Quick Edit</a>";
                 $actions['trash'] = "<a onclick='return confirm(\"Are you sure to delete\")' href='admin.php?page=book-list&action=trash&book_id=".$item['id']."'>Move to Trash</a>";
                 $actions['view'] = "<a href='#'>View</a>";
             }elseif($current_action === 'show_trash'){
@@ -195,7 +195,7 @@
 
             
             return sprintf(
-                '<strong>%s</strong> %s',
+                '<strong><span class="name">%s</span></strong> %s',
                 esc_html($item['name']),
                 $this->row_actions($actions)
             );
