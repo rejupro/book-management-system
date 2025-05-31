@@ -184,10 +184,10 @@
                 }
 
             }elseif($current_action === 'show_published'){
-                $actions['edit'] = "<a href='#'>Edit</a>";
+                $actions['edit'] = "<a href='admin.php?page=book-list&book_id=".$item['id']."&action=edit_book'>Edit</a>";
                 $actions['quick_edit'] = "<a href='#' class='btn-quick-click'>Quick Edit</a>";
                 $actions['trash'] = "<a onclick='return confirm(\"Are you sure to delete\")' href='admin.php?page=book-list&action=trash&book_id=".$item['id']."'>Move to Trash</a>";
-                $actions['view'] = "<a href='#'>View</a>";
+                $actions['view'] = "<a href='admin.php?page=book-list&book_id=".$item['id']."&action=view_book'>View</a>";
             }elseif($current_action === 'show_trash'){
                 $actions['restore'] = "<a href='admin.php?page=book-list&action=restore&book_id=".$item['id']."'>Restore</a>";
                 $actions['delete'] = "<a onclick='return confirm(\"Are you sure to delete permanently\")' href='admin.php?page=book-list&action=delete&book_id=".$item['id']."'>Delete Permanently</a>";

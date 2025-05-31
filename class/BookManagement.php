@@ -74,12 +74,67 @@ class BookManagement {
             $this->message = __('Failed to add book. Please try again.', 'bms-system');
         }
     }
+
+    private function singleBookView($book_id) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'books_systems';
+
+        $book_id = intval($book_id);
+        $book = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $book_id));
+        if ($book) {
+            return $book;
+        } else {
+            return null;
+        }
+    }
+
     public function renderBookListPage() {
-        include_once BMS_PLUGIN_PATH .  'pages/book-list.php';
-        ob_start();
-        $contents = ob_get_contents();
-        ob_end_clean();
-        echo $contents;
+
+        $action = isset($_GET['action']) ? sanitize_text_field($_GET['action']) : '';
+        $book_id = isset($_GET['book_id']) ? intval($_GET['book_id']) : 0;
+        if($action == 'view_book' && $book_id > 0) {
+            $book = $this->singleBookView($book_id);
+            include_once BMS_PLUGIN_PATH .  'pages/book-view.php';
+            ob_start();
+            $contents = ob_get_contents();
+            ob_end_clean();
+            echo $contents;
+        }elseif($action == 'edit_book' && $book_id > 0) {
+            
+
+            if(isset($_POST['btn_form_submit'])) {
+                global $wpdb;
+                $table_name = $wpdb->prefix . 'books_systems';
+
+                $wpdb->update(
+                    $table_name,
+                    array(
+                        'name' => sanitize_text_field($_POST['book_name']),
+                        'author' => sanitize_text_field($_POST['author_name']),
+                        'book_price' => sanitize_text_field($_POST['book_price']),
+                        'profile_image' => esc_url_raw($_POST['cover_image'])
+                    ),
+                    array('id' => $book_id)
+                );
+                $this->message = __('Book updated successfully!', 'bms-system');
+            } 
+            
+            
+
+            $book = $this->singleBookView($book_id);
+            include_once BMS_PLUGIN_PATH .  'pages/edit-book.php';
+            ob_start();
+            $contents = ob_get_contents();
+            ob_end_clean();
+            echo $contents;
+
+        }else{
+            include_once BMS_PLUGIN_PATH .  'pages/book-list.php';
+            ob_start();
+            $contents = ob_get_contents();
+            ob_end_clean();
+            echo $contents;
+        }
 
     }
     public function bmsCreateTable() {
